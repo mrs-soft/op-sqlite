@@ -2212,6 +2212,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mrs-soft/op-sqlite@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@mrs-soft/op-sqlite@workspace:."
+  dependencies:
+    "@biomejs/biome": "npm:^2.4.10"
+    "@sqlite.org/sqlite-wasm": "npm:^3.51.2-build8"
+    "@types/better-sqlite3": "npm:^7.6.13"
+    "@types/jest": "npm:^30.0.0"
+    better-sqlite3: "npm:^12.5.0"
+    clang-format: "npm:^1.8.0"
+    jest: "npm:^29.5.0"
+    react: "npm:19.2.3"
+    react-native: "npm:0.86.0"
+    react-native-builder-bob: "npm:^0.40.15"
+    typescript: "npm:^5.9.2"
+  peerDependencies:
+    "@sqlite.org/sqlite-wasm": "*"
+    react: "*"
+    react-native: "*"
+  peerDependenciesMeta:
+    "@sqlite.org/sqlite-wasm":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -2260,31 +2285,6 @@ __metadata:
   checksum: 10c0/26e376d780f60ff16e874a0ac9bc3399186846baae0b6e1352286385ac134d900cc5dafaded77f38d77f86898fc923ae1cee9d7399f0275b1aa24878915d722b
   languageName: node
   linkType: hard
-
-"@op-engineering/op-sqlite@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@op-engineering/op-sqlite@workspace:."
-  dependencies:
-    "@biomejs/biome": "npm:^2.4.10"
-    "@sqlite.org/sqlite-wasm": "npm:^3.51.2-build8"
-    "@types/better-sqlite3": "npm:^7.6.13"
-    "@types/jest": "npm:^30.0.0"
-    better-sqlite3: "npm:^12.5.0"
-    clang-format: "npm:^1.8.0"
-    jest: "npm:^29.5.0"
-    react: "npm:19.2.3"
-    react-native: "npm:0.86.0"
-    react-native-builder-bob: "npm:^0.40.15"
-    typescript: "npm:^5.9.2"
-  peerDependencies:
-    "@sqlite.org/sqlite-wasm": "*"
-    react: "*"
-    react-native: "*"
-  peerDependenciesMeta:
-    "@sqlite.org/sqlite-wasm":
-      optional: true
-  languageName: unknown
-  linkType: soft
 
 "@op-engineering/op-test@npm:0.2.7":
   version: 0.2.7
