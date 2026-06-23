@@ -2,6 +2,11 @@ name: "release"
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description:
+        required: true
+        default: '17.0.0-mrs.1'
 
 permissions:
   contents: write
@@ -16,7 +21,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-          registry-url: https://registry.npmjs.org
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@mrs-soft"
+
       - name: enable corepack
         run: corepack enable
         shell: bash
@@ -32,15 +39,14 @@ jobs:
             ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
             ${{ runner.os }}-yarn-
       - run: yarn install
-      - name: Update package.json version
-        run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          jq --arg version "$TAG_NAME" '.version = $version' package.json > tmp.$$.json && mv tmp.$$.json package.json
-      - run: npm publish
-      - name: Create Github Release
-        uses: elgohr/Github-Release-Action@v5
+
+      - name: Set Package Version
+        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
+      - name: Compile Library JS/TS
+        run: yarn bob build
+
+      - name: Publish to GitHub Packages
+        run: npm publish
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          title: Release ${{ github.ref_name }}
-          tag: ${{ github.ref_name }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
