@@ -1,3 +1,4 @@
+#include "mrs_sqlite_functions.hpp"
 #include "DBHostObject.h"
 #include "PreparedStatementHostObject.h"
 #if OP_SQLITE_USE_LIBSQL
@@ -166,6 +167,11 @@ DBHostObject::DBHostObject(jsi::Runtime &rt, std::string &url,
   thread_pool = std::make_shared<ThreadPool>();
   db = opsqlite_libsql_open_remote(url, auth_token);
 
+  // Регистрация кастомных функций mrs_
+  if (db != nullptr) {
+    mrs_register_all_functions(db);
+  }
+
   create_jsi_functions(rt);
 }
 
@@ -183,6 +189,11 @@ DBHostObject::DBHostObject(jsi::Runtime &rt, std::string &db_name,
       opsqlite_libsql_open_sync(db_name, path, url, auth_token, sync_interval,
                                 offline, encryption_key, remote_encryption_key);
 
+  // Регистрация кастомных функций mrs_
+  if (db != nullptr) {
+      mrs_register_all_functions(db);
+  }
+
   create_jsi_functions(rt);
 }
 
@@ -194,6 +205,11 @@ DBHostObject::DBHostObject(jsi::Runtime &rt, std::string &url,
       delete_db_name(turso_remote_db_name(url)) {
   thread_pool = std::make_shared<ThreadPool>();
   db = opsqlite_open_remote(url, auth_token, base_path);
+
+  // Регистрация кастомных функций mrs_
+  if (db != nullptr) {
+    mrs_register_all_functions(db);
+  }
 
   create_jsi_functions(rt);
 }
@@ -209,6 +225,11 @@ DBHostObject::DBHostObject(jsi::Runtime &rt, std::string &db_name,
 
   db = opsqlite_open_sync(db_name, path, url, auth_token,
                           remote_encryption_key);
+
+   // Регистрация кастомных функций mrs_
+  if (db != nullptr) {
+    mrs_register_all_functions(db);
+  }
 
   create_jsi_functions(rt);
 }
@@ -231,6 +252,12 @@ DBHostObject::DBHostObject(jsi::Runtime &rt, std::string &base_path,
 #else
   db = opsqlite_open(db_name, path, crsqlite_path, sqlite_vec_path);
 #endif
+
+  // Регистрация кастомных функций mrs_
+  if (db != nullptr) {
+      mrs_register_all_functions(db);
+  }
+
   create_jsi_functions(rt);
 };
 
