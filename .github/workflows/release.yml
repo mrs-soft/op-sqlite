@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description:
-        required: true
-        default: '17.0.0-mrs.1'
+        description: 'Укажите версию (ОСТАВЬТЕ ПУСТЫМ, чтобы взять текущую версию из package.json)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -41,12 +41,24 @@ jobs:
       - run: yarn install
 
       - name: Set Package Version
-        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
+        run: |
+          INPUT_VERSION="${{ github.event.inputs.version }}"
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          if [ -z "$INPUT_VERSION" ]; then
+            echo "Поле пустое. Используем текущую версию из package.json: $CURRENT_VERSION"
+          elif [ "$INPUT_VERSION" = "$CURRENT_VERSION" ]; then
+            echo "Введенная версия совпадает с текущей ($CURRENT_VERSION). Пропускаем обновление."
+          else
+            echo "Обновляем версию с $CURRENT_VERSION на $INPUT_VERSION..."
+            npm version $INPUT_VERSION --no-git-tag-version
+          fi
+        shell: bash
 
       - name: Compile Library JS/TS
         run: yarn bob build
 
       - name: Publish to GitHub Packages
-        run: npm publish
+        run: npm publish --tag=mrs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
