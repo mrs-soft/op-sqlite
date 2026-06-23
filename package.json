@@ -89,6 +89,10 @@
 			"optional": true
 		}
 	},
+	"workspaces": [
+		"example",
+		"node"
+	],
 	"prettier": {
 		"quoteProps": "consistent",
 		"singleQuote": true,
