@@ -83,11 +83,12 @@ private:
   std::set<std::shared_ptr<ReactiveQuery>> pending_reactive_queries;
   void auto_register_update_hook();
   void create_jsi_functions(jsi::Runtime &rt);
+  void initializeMrsFunctions(jsi::Runtime &rt);
   void flush_pending_reactive_queries(const std::shared_ptr<jsi::Value> &resolve);
 
   std::unordered_map<std::string, jsi::Value> function_map;
   std::string base_path;
-  std::shared_ptr<ThreadPool> thread_pool;
+  std::shared_ptr<ThreadPool> thread_pool = std::make_shared<ThreadPool>();
   std::string db_name;
   std::string delete_db_name;
   std::shared_ptr<jsi::Value> update_hook_callback;
