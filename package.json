@@ -1,6 +1,6 @@
 {
 	"name": "@mrs-soft/op-sqlite",
-	"version": "17.0.0-mrs.4",
+	"version": "17.0.0-mrs.5",
 	"description": "Fastest SQLite for React Native (with node.js support)",
 	"main": "./lib/module/index.js",
 	"types": "./lib/typescript/src/index.d.ts",

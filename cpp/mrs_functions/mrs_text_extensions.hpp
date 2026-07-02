@@ -4,7 +4,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <regex.h>
+#include <regex>
+#include <locale>
 #include "../sqlite3.h"
 
 typedef enum { MRS_TO_LOWER, MRS_TO_UPPER } MrsCaseMode;
@@ -149,26 +150,42 @@ static void mrs_regexp_native(sqlite3_context *context, int argc, sqlite3_value 
         sqlite3_result_int(context, 0);
         return;
     }
-    const char *pattern = (const char*)sqlite3_value_text(argv[0]);
-    const char *value = (const char*)sqlite3_value_text(argv[1]);
-    if (!pattern || !value) {
+
+    const char *pattern_raw = (const char*)sqlite3_value_text(argv[0]);
+    const char *value_raw = (const char*)sqlite3_value_text(argv[1]);
+
+    if (!pattern_raw || !value_raw) {
         sqlite3_result_int(context, 0);
         return;
     }
-    int cflags = REG_EXTENDED | REG_NOSUB;
-    const char *normalized_pattern = pattern;
-    if (strncmp(pattern, "(?i)", 4) == 0) {
-        cflags |= REG_ICASE;
-        normalized_pattern = pattern + 4;
+
+    std::string pattern(pattern_raw);
+    std::string value(value_raw);
+
+    // Настройка флагов компиляции регулярного выражения
+    std::regex_constants::syntax_option_type flags = std::regex_constants::ECMAScript;
+
+    // Обработка вашего кастомного префикса (?i) для игнорирования регистра
+    if (pattern.rfind("(?i)", 0) == 0) { // Проверяем, начинается ли строка с (?i)
+        flags |= std::regex_constants::icase;
+        pattern = pattern.substr(4); // Отрезаем префикс
     }
-    regex_t reg;
-    if (regcomp(&reg, normalized_pattern, cflags) != 0) {
-        sqlite3_result_error(context, "Invalid regular expression pattern", -1);
-        return;
+
+    try {
+        // Создаем регулярное выражение с принудительной локалью UTF-8 для корректной работы кириллицы
+        std::regex re;
+        re.imbue(std::locale("en_US.UTF-8")); // На Android NDK этого достаточно для работы UTF-8
+        re.assign(pattern, flags);
+
+        // Ищем совпадение в строке (std::regex_search ищет подстроку, аналог поведения LIKE/REGEXP)
+        bool match = std::regex_search(value, re);
+
+        sqlite3_result_int(context, match ? 1 : 0);
     }
-    int status = regexec(&reg, value, 0, NULL, 0);
-    regfree(&reg);
-    sqlite3_result_int(context, status == 0 ? 1 : 0);
+    catch (const std::regex_error& e) {
+        // Если пользователь ввел кривой паттерн, база не упадет, а выдаст ошибку
+        sqlite3_result_error(context, "Syntax error in regular expression", -1);
+    }
 }
 
 #endif // MRS_TEXT_EXTENSIONS_HPP
