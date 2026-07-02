@@ -32,3 +32,16 @@ It also contains a simple [Key-Value store](https://op-engineering.github.io/op-
 # License
 
 MIT License.
+
+
+---
+
+## 🛠️ MRS Fork Changes
+
+This is a customized fork of `op-sqlite` that adds advanced Cyrillic (UTF-8) text processing, custom JSON path helpers, and native regex support.
+
+* **Fixed Functions**: `lower()` and `upper()` now fully support Cyrillic characters.
+* **New Operators**: Integrated native POSIX `REGEXP` operator support.
+* **Custom Methods**: Added `mrs_ilike()` and `mrs_json_path()`.
+
+👉 **For Developers**: If you want to contribute or add new C++ SQLite functions, please read our [Contributing Guide](./CONTRIBUTING.md).
